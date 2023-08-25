@@ -5,15 +5,15 @@ const FollowController = {
   followUser: async (req, res) => {
     try {
       // Who to follow
-      const { followerId } = req.body;
-      // Followers
       const { followingId } = req.body;
-
+      // Follower
+      const followerId = req.user.id;
+  
       // Check for empty fields
       if (!followerId || !followingId) {
-        return res.status(400).json({ error: "All fields are required" });
+        return res.status(400).json({ error: 'Все поля обязательны' });
       }
-
+  
       // Check if the follow already exists
       const existingFollow = await prisma.follow.findFirst({
         where: {
@@ -21,11 +21,16 @@ const FollowController = {
           followingId,
         },
       });
-
+  
       if (existingFollow) {
-        return res.status(400).json({ error: "Follow already exists" });
+        return res.status(400).json({ error: 'Вы уже подписаны на этого пользователя' });
       }
-
+  
+      // Check if the user is trying to follow themselves
+      if (followerId === followingId) {
+        return res.status(400).json({ error: "Вы не можете подписаться на самого себя" });
+      }
+  
       // Create the follow
       const follow = await prisma.follow.create({
         data: {
@@ -33,23 +38,24 @@ const FollowController = {
           followingId,
         },
       });
-
+  
       res.json(follow);
     } catch (error) {
       console.error('Error following user:', error);
-      res.status(500).json({ error: 'Failed to follow user' });
+      res.status(500).json({ error: 'Ошибка при получении пользователя' });
     }
   },
 
   unfollowUser: async (req, res) => {
     try {
-      const { followerId, followingId } = req.body;
-
+      const { followingId } = req.body;
+      const followerId = req.user.id;
+  
       // Check for empty fields
       if (!followerId || !followingId) {
-        return res.status(400).json({ error: "All fields are required" });
+        return res.status(400).json({ error: 'Все поля обязательны' });
       }
-
+  
       // Check if the follow does not exist
       const existingFollow = await prisma.follow.findFirst({
         where: {
@@ -57,11 +63,16 @@ const FollowController = {
           followingId,
         },
       });
-
+  
       if (!existingFollow) {
-        return res.status(400).json({ error: "Follow does not exist" });
+        return res.status(400).json({ error: "Вы не подписаны на этого пользователя" });
       }
-
+  
+      // Check if the user is trying to unfollow themselves
+      if (followerId === followingId) {
+        return res.status(400).json({ error: "Вы не можете отписаться от себя" });
+      }
+  
       // Delete the follow
       const follow = await prisma.follow.deleteMany({
         where: {
@@ -69,13 +80,13 @@ const FollowController = {
           followingId,
         },
       });
-
+  
       res.json(follow);
     } catch (error) {
       console.error('Error unfollowing user:', error);
-      res.status(500).json({ error: 'Failed to unfollow user' });
+      res.status(500).json({ error: 'Ошибка при попытке отписаться' });
     }
-  },
+  }
 };
 
 module.exports = FollowController;

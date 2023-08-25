@@ -52,22 +52,33 @@ const PostController = {
   },
 
   deletePost: async (req, res) => {
-    const { id } =req.params;
+    const { id } = req.params;
+  
+    // Проверка, что пользователь удаляет свой пост
+    const post = await prisma.post.findUnique({ where: { id } });
 
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if (post.userId !== req.user.id) {
+      return res.status(403).json({ error: "Access denied" });
+    }
+  
     try {
       const transaction = await prisma.$transaction([
         prisma.comment.deleteMany({ where: { postId: id } }),
         prisma.like.deleteMany({ where: { postId: id } }),
         prisma.post.delete({ where: { id } }),
       ]);
-      
+  
       res.json(transaction);
-    } catch(error) {
+    } catch (error) {
       console.error("Error in deletePost:", error);
-
+  
       res.status(500).json({ error: 'There was an error deleting the post' });
     }
-  },
+  }
 };
 
 module.exports = PostController

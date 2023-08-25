@@ -14,8 +14,6 @@ const LikeController = {
         where: { postId, userId },
       });
 
-      console.log('existingLike', existingLike)
-
       if(existingLike) {
         return res.status(400).json({ error: 'Like already exists' });
       }

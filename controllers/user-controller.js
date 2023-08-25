@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { authenticateToken } = require("../middleware/auth");
 const { prisma } = require("../prisma/prisma-client");
 
 // UserController.js
@@ -69,18 +68,15 @@ const UserController = {
     }
   },
 
-  getAllUsers: [
-    authenticateToken,
-    async (req, res) => {
-      try {
-        const users = await prisma.user.findMany();
-        res.json(users);
-      } catch (error) {
-        console.error("Error in getAllUsers:", error);
-        res.status(500).json({ error: "Internal server error" });
-      }
-    },
-  ],
+  getAllUsers: async (req, res) => {
+    try {
+      const users = await prisma.user.findMany();
+      res.json(users);
+    } catch (error) {
+      console.error("Error in getAllUsers:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
 
   getUserById: async (req, res) => {
     const { id } = req.params;
@@ -99,6 +95,11 @@ const UserController = {
   updateUser: async (req, res) => {
     const { id } = req.params;
     const { email, name } = req.body;
+
+      // Проверка, что пользователь обновляет свою информацию
+  if (id !== req.user.id) {
+    return res.status(403).json({ error: "Access denied" });
+  }
 
     if (!email || !name) {
       return res.status(400).json({ error: "All fields are required" });
