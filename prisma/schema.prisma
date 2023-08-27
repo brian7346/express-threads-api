@@ -8,15 +8,21 @@ datasource db {
 }
 
 model User {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  password  String
-  name      String?
-  posts     Post[]
-  following Follow[] @relation("UserFollowing")
-  followers Follow[] @relation("UserFollowers")
-  likes     Like[]
-  comments  Comment[]
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  email       String   @unique
+  password    String
+  name        String?
+  avatarUrl   String?
+  dateOfBirth DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bio         String?
+  location    String?
+  posts       Post[]
+  following   Follow[] @relation("UserFollowing")
+  followers   Follow[] @relation("UserFollowers")
+  likes       Like[]
+  comments    Comment[]
 }
 
 model Follow {

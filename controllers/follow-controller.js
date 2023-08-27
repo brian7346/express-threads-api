@@ -7,7 +7,7 @@ const FollowController = {
       // Who to follow
       const { followingId } = req.body;
       // Follower
-      const followerId = req.user.id;
+      const followerId = req.user.userId;
   
       // Check for empty fields
       if (!followerId || !followingId) {
@@ -49,7 +49,7 @@ const FollowController = {
   unfollowUser: async (req, res) => {
     try {
       const { followingId } = req.body;
-      const followerId = req.user.id;
+      const followerId = req.user.userId;
   
       // Check for empty fields
       if (!followerId || !followingId) {

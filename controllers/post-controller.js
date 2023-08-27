@@ -61,7 +61,7 @@ const PostController = {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    if (post.userId !== req.user.id) {
+    if (post.userId !== req.user.userId) {
       return res.status(403).json({ error: "Access denied" });
     }
   

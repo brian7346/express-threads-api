@@ -5,7 +5,7 @@ const CommentController = {
   createComment: async (req, res) => {
     try {
       const { postId, content } = req.body;
-      const userId = req.user.id;
+      const userId = req.user.userId;
   
       // Check for empty fields
       if (!postId || !userId || !content) {
@@ -41,7 +41,7 @@ const CommentController = {
   deleteComment: async (req, res) => {
     try {
       const { id } = req.params;
-      const userId = req.user.id;
+      const userId = req.user.userId;
   
       // Check if comment exists
       const comment = await prisma.comment.findUnique({ where: { id } });

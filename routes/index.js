@@ -6,13 +6,25 @@ const FollowController = require("../controllers/follow-controller");
 const LikeController = require("../controllers/like-controller");
 const CommentController = require("../controllers/comment-controller");
 const { authenticateToken } = require("../middleware/auth");
+const multer = require('multer');
 
+const uploadDestination = 'uploads';
+
+// Показываем, где хранить загружаемые файлы
+const storage = multer.diskStorage({
+  destination: uploadDestination,
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
 // User routes
 router.post("/register", UserController.register);
 router.post("/login", UserController.login);
 router.get("/users", authenticateToken, UserController.getAllUsers);
 router.get("/users/:id", authenticateToken, UserController.getUserById);
-router.put("/users/:id", authenticateToken, UserController.updateUser);
+router.put("/users/:id", authenticateToken, upload.single('avatar'), UserController.updateUser);
 
 // Post routes
 router.post("/posts", authenticateToken, PostController.createPost);

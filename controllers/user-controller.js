@@ -94,21 +94,26 @@ const UserController = {
 
   updateUser: async (req, res) => {
     const { id } = req.params;
-    const { email, name } = req.body;
+    const { email, name, dateOfBirth, bio, location } = req.body;
 
-      // Проверка, что пользователь обновляет свою информацию
-  if (id !== req.user.id) {
-    return res.status(403).json({ error: "Access denied" });
-  }
+    const avatarUrl = req.file.path;
 
-    if (!email || !name) {
-      return res.status(400).json({ error: "All fields are required" });
+    // Проверка, что пользователь обновляет свою информацию
+    if (id !== req.user.userId) {
+      return res.status(403).json({ error: "Access denied" });
     }
 
     try {
       const user = await prisma.user.update({
         where: { id },
-        data: { email, name },
+        data: {
+          email: email || undefined,
+          name: name || undefined,
+          avatarUrl: avatarUrl || undefined,
+          dateOfBirth: dateOfBirth || undefined,
+          bio: bio || undefined,
+          location: location || undefined,
+        },
       });
       res.json(user);
     } catch (error) {
