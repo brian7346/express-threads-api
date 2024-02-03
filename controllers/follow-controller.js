@@ -1,90 +1,68 @@
 const { prisma } = require("../prisma/prisma-client");
 
-// FollowController.js
 const FollowController = {
   followUser: async (req, res) => {
+    const { followingId } = req.body;
+    const userId = req.user.userId;
+
+    if (followingId === userId) {
+      return res.status(500).json({ message: 'Вы не можете подписаться на самого себя' });
+    }
+
     try {
-      // Who to follow
-      const { followingId } = req.body;
-      // Follower
-      const followerId = req.user.userId;
-  
-      // Check for empty fields
-      if (!followerId || !followingId) {
-        return res.status(400).json({ error: 'Все поля обязательны' });
-      }
-  
-      // Check if the follow already exists
-      const existingFollow = await prisma.follow.findFirst({
+      const existingSubscription = await prisma.follows.findFirst({
         where: {
-          followerId,
-          followingId,
-        },
-      });
-  
-      if (existingFollow) {
-        return res.status(400).json({ error: 'Вы уже подписаны на этого пользователя' });
+           AND: [
+             {
+               followerId: "65bbcd112365e9fe9c048f6e"
+             },
+             {
+               followingId: "65bbccf82365e9fe9c048f6c"
+             }
+           ]
+        }
+       })
+
+      if (existingSubscription) {
+        return res.status(400).json({ message: 'Подписка уже существует' });
       }
-  
-      // Check if the user is trying to follow themselves
-      if (followerId === followingId) {
-        return res.status(400).json({ error: "Вы не можете подписаться на самого себя" });
-      }
-  
-      // Create the follow
-      const follow = await prisma.follow.create({
+
+      await prisma.follows.create({
         data: {
-          followerId,
-          followingId,
+          follower: { connect: { id: userId } },
+          following: { connect: { id: followingId } },
         },
       });
-  
-      res.json(follow);
+
+      res.status(201).json({ message: 'Подписка успешно создана' });
     } catch (error) {
-      console.error('Error following user:', error);
-      res.status(500).json({ error: 'Ошибка при получении пользователя' });
+      console.log('error', error)
+      res.status(500).json({ error: 'Ошибка сервера' });
     }
   },
-
   unfollowUser: async (req, res) => {
+    const { followingId } = req.body;
+    const userId = req.user.userId;
+
     try {
-      const { followingId } = req.body;
-      const followerId = req.user.userId;
-  
-      // Check for empty fields
-      if (!followerId || !followingId) {
-        return res.status(400).json({ error: 'Все поля обязательны' });
-      }
-  
-      // Check if the follow does not exist
-      const existingFollow = await prisma.follow.findFirst({
+      const follows = await prisma.follows.findFirst({
         where: {
-          followerId,
-          followingId,
+          AND: [{ followerId: userId }, { followingId: followingId }]
         },
       });
-  
-      if (!existingFollow) {
-        return res.status(400).json({ error: "Вы не подписаны на этого пользователя" });
+
+      if (!follows) {
+        return res.status(404).json({ error: "Запись не найдена" });
       }
-  
-      // Check if the user is trying to unfollow themselves
-      if (followerId === followingId) {
-        return res.status(400).json({ error: "Вы не можете отписаться от себя" });
-      }
-  
-      // Delete the follow
-      const follow = await prisma.follow.deleteMany({
-        where: {
-          followerId,
-          followingId,
-        },
+
+      await prisma.follows.delete({
+        where: { id: follows.id },
       });
-  
-      res.json(follow);
+
+      res.status(200).json({ message: 'Отписка успешно выполнена' });
     } catch (error) {
-      console.error('Error unfollowing user:', error);
-      res.status(500).json({ error: 'Ошибка при попытке отписаться' });
+      console.log('error', error)
+      res.status(500).json({ error: 'Ошибка сервера' });
     }
   }
 };

@@ -22,6 +22,7 @@ const upload = multer({ storage: storage });
 // User routes
 router.post("/register", UserController.register);
 router.post("/login", UserController.login);
+router.get("/current", authenticateToken, UserController.current);
 router.get("/users", authenticateToken, UserController.getAllUsers);
 router.get("/users/:id", authenticateToken, UserController.getUserById);
 router.put("/users/:id", authenticateToken, upload.single('avatar'), UserController.updateUser);
@@ -34,15 +35,14 @@ router.delete("/posts/:id", authenticateToken, PostController.deletePost);
 
 // Follow routes
 router.post("/follow", authenticateToken, FollowController.followUser);
-router.delete("/unfollow", FollowController.unfollowUser);
+router.delete("/unfollow/:id",authenticateToken, FollowController.unfollowUser);
 
 // Like routes
 router.post("/likes", authenticateToken, LikeController.likePost);
-router.delete("/likes", authenticateToken, LikeController.unlikePost);
+router.delete("/likes/:id", authenticateToken, LikeController.unlikePost);
 
 // Comment routes
 router.post("/comments", authenticateToken, CommentController.createComment);
-router.get("/comments", authenticateToken, CommentController.getAllComments);
 router.delete(
   "/comments/:id",
   authenticateToken,

@@ -1,4 +1,4 @@
-Скачайте образ Docker для MongoDB с поддержкой replica set: 
+Мы будем использовать образ Docker для с базой данных MongoDB с поддержкой replica set: 
 ```
 docker pull prismagraphql/mongo-single-replica:5.0.3
 ```

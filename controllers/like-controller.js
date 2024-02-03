@@ -1,12 +1,13 @@
 const { prisma } = require('../prisma/prisma-client');
 
-// LikeController.js
 const LikeController = {
   likePost: async (req, res) => {
-    const { postId, userId } = req.body;
+    const { postId } = req.body;
+
+    const userId = req.user.userId;
 
     if (!postId || !userId) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({ error: 'Все поля обязательны' });
     }
 
     try {
@@ -15,7 +16,7 @@ const LikeController = {
       });
 
       if(existingLike) {
-        return res.status(400).json({ error: 'Like already exists' });
+        return res.status(400).json({ error: 'Вы уже поставили лайк этому посту' });
       }
 
       const like = await prisma.like.create({ 
@@ -24,37 +25,55 @@ const LikeController = {
 
       res.json(like);
     } catch (error) {
-      console.error("Error in likePost:", error);
-
-      res.status(500).json({ error: 'Something went wrong' });
+      res.status(500).json({ error: 'Что-то пошло не так' });
     }
   },
 
   unlikePost: async (req, res) => {
-    const { postId, userId } = req.body;
+    const { id } = req.params;
 
-    if (!postId || !userId) {
-      return res.status(400).json({ error: 'All fields are required' });
+    const userId = req.user.userId;
+
+    if (!id || !userId) {
+      return res.status(400).json({ error: 'Вы уже поставили дизлайк этому посту' });
     }
 
     try {
       const existingLike = await prisma.like.findFirst({
-        where: { postId, userId },
+        where: { postId: id, userId },
       });
 
       if(!existingLike) {
-        return res.status(400).json({ error: 'Like does not exist' });
+        return res.status(400).json({ error: 'Лайк уже существует' });
       }
 
       const like = await prisma.like.deleteMany({
-        where: { postId, userId },
+        where: { postId: id, userId },
       });
 
       res.json(like);
     } catch (error) {
-      res.status(500).json({ error: 'Something went wrong' });
+      res.status(500).json({ error: 'Что-то пошло не так' });
     }
   },
+  getLikesByUser: async (req, res) => {
+    const userId = req.user.userId;
+   
+    if (!userId) {
+       return res.status(400).json({ error: 'Необходимо предоставить ID пользователя' });
+    }
+   
+    try {
+       const likes = await prisma.like.findMany({
+         where: { userId },
+         include: { post: true }, // Include related posts
+       });
+   
+       res.json(likes);
+    } catch (error) {
+       res.status(500).json({ error: 'Что-то пошло не так' });
+    }
+   },
 };
 
 module.exports = LikeController
