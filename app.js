@@ -3,6 +3,7 @@ var express = require('express');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+var path = require('path');
 var fs = require('fs');
 require('dotenv').config();
 
@@ -16,6 +17,12 @@ app.use(cookieParser());
 app.set('view engine', 'pug');
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static('uploads'));
+
+// app.use(express.static(path.join(__dirname, 'build')));
+
+// app.get('/*', function (req, res) {
+//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 
 app.use('/api', require('./routes'));
 

@@ -55,25 +55,7 @@ const LikeController = {
     } catch (error) {
       res.status(500).json({ error: 'Что-то пошло не так' });
     }
-  },
-  getLikesByUser: async (req, res) => {
-    const userId = req.user.userId;
-   
-    if (!userId) {
-       return res.status(400).json({ error: 'Необходимо предоставить ID пользователя' });
-    }
-   
-    try {
-       const likes = await prisma.like.findMany({
-         where: { userId },
-         include: { post: true }, // Include related posts
-       });
-   
-       res.json(likes);
-    } catch (error) {
-       res.status(500).json({ error: 'Что-то пошло не так' });
-    }
-   },
+  }
 };
 
 module.exports = LikeController

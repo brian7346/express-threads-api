@@ -14,10 +14,10 @@ const FollowController = {
         where: {
            AND: [
              {
-               followerId: "65bbcd112365e9fe9c048f6e"
+               followerId: userId
              },
              {
-               followingId: "65bbccf82365e9fe9c048f6c"
+               followingId
              }
            ]
         }

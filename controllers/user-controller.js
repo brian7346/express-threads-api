@@ -76,16 +76,6 @@ const UserController = {
     }
   },
 
-  getAllUsers: async (req, res) => {
-    try {
-      const users = await prisma.user.findMany();
-      res.json(users);
-    } catch (error) {
-      console.error("Error in getAllUsers:", error);
-      res.status(500).json({ error: "Что-то пошло не так" });
-    }
-  },
-
   getUserById: async (req, res) => {
     const { id } = req.params;
     const userId = req.user.userId;
