@@ -56,14 +56,16 @@ const UserController = {
     try {
       // Find the user
       const user = await prisma.user.findUnique({ where: { email } });
+
       if (!user) {
-        return res.status(400).json({ error: "Неверное имя пользователя или пароль" });
+        return res.status(400).json({ error: "Неверный логин или пароль" });
       }
 
       // Check the password
       const valid = await bcrypt.compare(password, user.password);
+
       if (!valid) {
-        return res.status(400).json({ error: "Неверное имя пользователя или пароль" });
+        return res.status(400).json({ error: "Неверный логин или пароль" });
       }
 
       // Generate a JWT
