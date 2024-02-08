@@ -1,9 +1,4 @@
-Мы будем использовать образ Docker для с базой данных MongoDB с поддержкой replica set: 
-```
-docker pull prismagraphql/mongo-single-replica:5.0.3
-```
-
-Запустите контейнер с образом MongoDB и настройками replica set:
+Запустите контейнер с образом MongoDB и настройками replica set (он автоматичиски скачает и запустит этот образ):
 
 ```
   docker run --name mongo \
