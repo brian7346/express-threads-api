@@ -6,7 +6,7 @@ const LikeController = {
 
     const userId = req.user.userId;
 
-    if (!postId || !userId) {
+    if (!postId) {
       return res.status(400).json({ error: 'Все поля обязательны' });
     }
 
@@ -34,7 +34,7 @@ const LikeController = {
 
     const userId = req.user.userId;
 
-    if (!id || !userId) {
+    if (!id) {
       return res.status(400).json({ error: 'Вы уже поставили дизлайк этому посту' });
     }
 

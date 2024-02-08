@@ -1,13 +1,12 @@
 const { prisma } = require('../prisma/prisma-client');
 
-// PostController.js
 const PostController = {
   createPost: async (req, res) => {
     const { content } = req.body;
 
     const authorId = req.user.userId;
 
-    if (!content || !authorId) {
+    if (!content) {
       return res.status(400).json({ error: 'Все поля обязательны' });
     }
 
@@ -29,10 +28,6 @@ const PostController = {
 
   getAllPosts: async (req, res) => {
     const userId = req.user.userId;
-
-    if (!userId) {
-      return res.status(500).json({ error: 'Не авторизован' });
-    }
 
     try {
       const posts = await prisma.post.findMany({
@@ -61,9 +56,6 @@ const PostController = {
     const { id } = req.params;
     const userId = req.user.userId;
 
-    if (!userId) {
-      return res.status(500).json({ error: 'Не авторизован' });
-    }
     try {
       const post = await prisma.post.findUnique({
         where: { id },

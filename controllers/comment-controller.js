@@ -6,7 +6,7 @@ const CommentController = {
       const { postId, content } = req.body;
       const userId = req.user.userId;
 
-      if (!postId || !userId || !content) {
+      if (!postId || !content) {
         return res.status(400).json({ error: 'Все поля обязательны' });
       }
 
