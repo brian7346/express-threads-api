@@ -5,7 +5,7 @@
 git clone https://github.com/brian7346/express-threads-api.git
 ```
 
-2. Склонировать репозиторий с клиентским приложением по ссылке https://github.com/brian7346/react-threads.git на свой компьютер.
+2. Склонировать репозиторий с клиентским приложением по ссылке [https://github.com/brian7346/react-threads.git](https://github.com/brian7346/react-client) на свой компьютер.
 ```
 git clone https://github.com/brian7346/react-threads.git
 ```
